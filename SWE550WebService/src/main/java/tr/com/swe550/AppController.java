@@ -1,7 +1,8 @@
 package tr.com.swe550;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -11,22 +12,43 @@ public class AppController {
     public static final AtomicLong secondEndpointCounter = new AtomicLong(0);
     public static final AtomicLong thirdEndpointCounter = new AtomicLong(0);
 
-    @GetMapping("/first")
+    @RequestMapping(value = "/first", method = RequestMethod.GET)
     public String first() {
+
+        System.out.println("---- /first ----");
         System.out.println("first endpoint count:" + firstEndpointCounter.incrementAndGet());
-        return "first endpoint";
+        System.out.println("---- /first ----");
+        System.out.println();
+
+        return "<p>- first endpoint is called with count=%s".formatted(firstEndpointCounter.get()) + "</p>";
     }
 
-    @GetMapping("/second")
-    public String second() {
+    @RequestMapping(value = "/second", method = RequestMethod.POST)
+    public String second(@RequestBody String body) {
+
+        System.out.println("---- /second ----");
+        System.out.println("body: " + body);
         System.out.println("second endpoint count:" + secondEndpointCounter.incrementAndGet());
-        return "second endpoint";
+        System.out.println("---- /second ----");
+        System.out.println();
+
+        return "<p>- second endpoint is called with body=%s, count=%s".formatted(body, secondEndpointCounter.get()) + "</p>";
     }
 
-    @GetMapping("/third")
-    public String third() {
+    @RequestMapping(value = "/third", method = RequestMethod.GET)
+    public String third(@RequestParam String param) {
+
+        System.out.println("---- /third ----");
+        System.out.println("param: " + param);
         System.out.println("third endpoint count:" + thirdEndpointCounter.incrementAndGet());
-        return "third endpoint";
+        System.out.println("---- /third ----");
+        System.out.println();
+
+        return "<p>- third endpoint is called with param=%s, count=%s".formatted(param, thirdEndpointCounter.get()) + "</p>";
     }
 
+    @RequestMapping(value = "/broken_endpoint", method = RequestMethod.GET)
+    public ResponseEntity<?> brokenEndpoint() {
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
